@@ -1,0 +1,77 @@
+package ted
+
+import (
+	"database/sql"
+	"github.com/google/uuid"
+	_ "github.com/lib/pq"
+	"ted-processor/pkg/domain/infra/errors"
+	infra "ted-processor/pkg/domain/infra/logger"
+)
+
+type tedPostgresRepo struct {
+	db *sql.DB
+}
+
+func NewTedPostgresRepo(db *sql.DB) *tedPostgresRepo {
+	return &tedPostgresRepo{db: db}
+}
+
+func (repo *tedPostgresRepo) StorePreTransaction(t *PreTransaction)(*PreTransaction,error){
+	stmt, err := repo.db.Prepare(`
+		insert into pre_transaction (id, from_account, to_account, value, time, device_type, status, started_at, metadata) 
+		values(?,?,?,?,?,?,?,?,?)`)
+	if err != nil {
+		infra.Logger.Errorw("error to create statement","error",errors.Wrap(err))
+		return nil, err
+	}
+	defer stmt.Close()
+
+	id,_ :=uuid.NewUUID()
+
+	_, err = stmt.Exec(
+		id.String(),
+		t.FromAccount,
+		t.ToAccount,
+		t.Value,
+		t.Time,
+		t.DeviceType,
+		t.Status,
+		t.StartedAt,
+		t.Metadata,
+	)
+	if err != nil {
+		infra.Logger.Errorw("error to execute statement","error",errors.Wrap(err))
+		return nil,err
+	}
+	return t,nil
+}
+
+func (repo *tedPostgresRepo) StoreTransactionConfirmation(t *TransactionConfirmation)(*TransactionConfirmation,error){
+	stmt, err := repo.db.Prepare(`
+		insert into transaction_confirmation (id, from_account, to_account, value, time, device_type, status, end_at, metadata,payment_id) 
+		values(?,?,?,?,?,?,?,?,?,?)`)
+	if err != nil {
+		infra.Logger.Errorw("error to create statement","error",errors.Wrap(err))
+		return nil, err
+	}
+	defer stmt.Close()
+	id,_ :=uuid.NewUUID()
+	_, err = stmt.Exec(
+		id.String(),
+		t.FromAccount,
+		t.ToAccount,
+		t.Value,
+		t.Time,
+		t.DeviceType,
+		t.Status,
+		t.EndAt,
+		t.Metadata,
+		t.PaymentId,
+	)
+	if err != nil {
+		infra.Logger.Errorw("error to execute statement","error",errors.Wrap(err))
+		return nil,err
+	}
+	return t,nil
+}
+
