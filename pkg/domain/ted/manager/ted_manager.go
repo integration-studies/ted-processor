@@ -8,6 +8,7 @@ import (
 	"ted-processor/pkg/domain/infra/errors"
 	infra "ted-processor/pkg/domain/infra/logger"
 	"ted-processor/pkg/domain/ted"
+	errors2 "ted-processor/pkg/domain/ted/errors"
 )
 
 type TedManager struct {
@@ -37,8 +38,12 @@ func (tm *TedManager) Receive(ctx context.Context, event cloudevents.Event) (*cl
 	tc := &ted.TransactionConfirmation{}
 	payment, errPay := tm.paymentNotification.CallPayment(data)
 	if errPay != nil {
+		if _, ok := errPay.(*errors2.PaymentDeclinedError); ok {
+			tc = ted.NewTransactionReason(metadata, payment, data)
+		} else {
+			tc = ted.NewTransactionError(metadata, data)
+		}
 		infra.Logger.Errorw("Error in bank account service", "error", errors.Wrap(errPay))
-		tc = ted.NewTransactionError(metadata, data)
 	} else {
 		tc = ted.NewTransactionConfirmation(metadata, payment, data)
 	}

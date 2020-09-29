@@ -32,6 +32,20 @@ func NewTransactionConfirmation(metadata map[string]string, paymentData *data.Pa
 	}
 }
 
+func NewTransactionReason(metadata map[string]string, paymentData *data.PaymentData, t *domain.Transaction) *TransactionConfirmation {
+	return &TransactionConfirmation{
+		FromAccount: t.FromAccount,
+		ToAccount:   t.ToAccount,
+		Value:       t.Value,
+		Time:        t.Time,
+		DeviceType:  t.DeviceType,
+		Status:      paymentData.Reason,
+		EndAt:       time.Now(),
+		Metadata:    metadata,
+		PaymentId:   paymentData.Id,
+	}
+}
+
 func NewTransactionError(metadata map[string]string, t *domain.Transaction) *TransactionConfirmation {
 	return &TransactionConfirmation{
 		FromAccount: t.FromAccount,
