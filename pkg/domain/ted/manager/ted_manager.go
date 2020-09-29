@@ -44,7 +44,7 @@ func (tm *TedManager) Receive(ctx context.Context, event cloudevents.Event) (*cl
 	}
 	td, errCon := tm.repo.StoreTransactionConfirmation(tc)
 	if errCon != nil {
-		infra.Logger.Errorw("Error while storing transaction confirmartion", "error", errors.Wrap(errPay))
+		infra.Logger.Errorw("Error while storing transaction confirmation", "error", errors.Wrap(errPay))
 	}
 	log.Printf("Transaction was decoded sucessfully!!! %q", data)
 	return nil, cloudevents.NewHTTPResult(202, "event received", td)
