@@ -9,6 +9,6 @@ CREATE TABLE transaction_confirmation
     status   VARCHAR(50)   NOT NULL,
     end_at TIMESTAMP           NOT NULL,
     metadata json NOT NULL,
-    payment_id varchar(200) NOT NULL
+    payment_id varchar(200)
 );
 

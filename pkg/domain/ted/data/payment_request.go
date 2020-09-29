@@ -1,11 +1,11 @@
 package data
 
 type PaymentRequest struct {
-	Type        string
-	SubType     string
-	FromAccount string
-	ToAccount   string
-	Value       float64
-	Time        string
-	DeviceType  string
+	Type        string  `json:"type"`
+	SubType     string  `json:"subType"`
+	FromAccount string  `json:"fromAccount"`
+	ToAccount   string  `json:"toAccount"`
+	Value       float64 `json:"value"`
+	Time        string  `json:"time"`
+	DeviceType  string  `json:"deviceType"`
 }
